@@ -1,0 +1,7 @@
+/* Punto de entrada único de estilos. Se importa una sola vez en main.jsx */
+@import './global.css';
+
+
+
+/* Pages */
+@import './auth.css';
