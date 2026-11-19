@@ -24,3 +24,8 @@ dist-ssr
 *.sw?
 
 coverage
+
+# Variables de entorno privadas
+.env
+.env.*
+!.env.example
