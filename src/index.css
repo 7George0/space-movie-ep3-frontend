@@ -1,0 +1,23 @@
+/* src/index.css */
+@import './styles/tokens.css';
+@import './styles/base.css';
+@import './styles/auth.css';
+
+@import './styles/atoms/image.css';
+@import './styles/atoms/title.css';
+@import './styles/atoms/rating.css';
+@import './styles/atoms/description.css';
+@import './styles/atoms/text.css';
+
+@import './styles/molecules/movie-info.css';
+@import './styles/molecules/approval-badge.css';
+@import './styles/molecules/info-item.css';
+@import './styles/molecules/review-card.css';
+
+@import './styles/organisms/movie-card.css';
+@import './styles/organisms/movie-cards.css';
+@import './styles/organisms/header.css';
+@import './styles/organisms/footer.css';
+@import './styles/organisms/approval-section.css';
+@import './styles/organisms/movie-details.css';
+@import './styles/organisms/review-form.css';
