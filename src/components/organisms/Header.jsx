@@ -1,25 +1,38 @@
-import { Link, useNavigate } from 'react-router-dom'
-import { NavLinks } from '../molecules/NavLinks'
+
+import { Link, useNavigate } from 'react-router-dom';
+import { NavLinks } from '../molecules/NavLinks';
+import { useAuth } from '../../context/AuthContext';
 import '../../styles/organisms/header.css';
+
 export function Header({ nombre }) {
-  const navigate = useNavigate()
-  const sesion = sessionStorage.getItem('spaceMovieDemo')
-  const usuario = sesion ? JSON.parse(sesion) : null
+  const navigate = useNavigate();
+  const { usuario, autenticado, logout } = useAuth();
 
   const cerrarSesion = () => {
-    sessionStorage.removeItem('spaceMovieDemo')
-    navigate('/login')
-  }
+    logout();
+    navigate('/login');
+  };
 
   const enlaces = [
     { label: 'Inicio', to: '/' },
-    ...(usuario
-      ? [{ label: `Cerrar sesión (${usuario.nombre})`, onClick: cerrarSesion }]
+    ...(autenticado
+      ? [
+          {
+            label: usuario.rol === 'ADMIN'
+              ? `Administrador (${usuario.correo})`
+              : `Usuario (${usuario.correo})`,
+            to: usuario.rol === 'ADMIN' ? '/admin' : '/',
+          },
+          {
+            label: 'Cerrar sesión',
+            onClick: cerrarSesion,
+          },
+        ]
       : [
           { label: 'Iniciar sesión', to: '/login' },
           { label: 'Registrarse', to: '/registro' },
         ]),
-  ]
+  ];
 
   return (
     <header className="site-header sticky-top">
@@ -27,8 +40,9 @@ export function Header({ nombre }) {
         <Link className="navbar-brand brand" to="/">
           {nombre}
         </Link>
+
         <NavLinks items={enlaces} />
       </nav>
     </header>
-  )
+  );
 }

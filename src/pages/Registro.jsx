@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { validarRegistro } from "../utils/validaciones";
@@ -9,28 +10,60 @@ function Registro() {
   const [error, setError] = useState("");
   const [exito, setExito] = useState(false);
 
-  const manejarRegistro = ({ nombre, correo, password, confirmar }) => {
+  const manejarRegistro = async ({
+    nombre,
+    correo,
+    password,
+    confirmar,
+  }) => {
     setError("");
     setExito(false);
 
-    const resultado = validarRegistro(nombre, correo, password, confirmar);
+    const resultado = validarRegistro(
+      nombre,
+      correo,
+      password,
+      confirmar
+    );
+
     if (resultado) {
       setError(resultado);
       return;
     }
 
-    const usuarios = JSON.parse(localStorage.getItem("spaceMovieUsuarios") || "[]");
-    const correoNormalizado = correo.trim().toLowerCase();
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/v1/usuarios",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nombre: nombre.trim(),
+            correo: correo.trim().toLowerCase(),
+            password: password,
+          }),
+        }
+      );
 
-    if (usuarios.some((u) => u.correo === correoNormalizado)) {
-      setError("Este correo electrónico ya está registrado.");
-      return;
+      const data = await response.json().catch(() => ({}));
+
+      if (!response.ok) {
+        throw new Error(
+          data.message ||
+          data.error ||
+          "No se pudo completar el registro."
+        );
+      }
+
+      setExito(true);
+
+    } catch (err) {
+      setError(
+        err.message || "No se pudo conectar con el servidor."
+      );
     }
-
-    const nuevoUsuario = { nombre: nombre.trim(), correo: correoNormalizado };
-    localStorage.setItem("spaceMovieUsuarios", JSON.stringify([...usuarios, nuevoUsuario]));
-    
-    setExito(true);
   };
 
   return (
@@ -38,17 +71,20 @@ function Registro() {
       <section className="auth-card">
         <div className="logo-space">SPACE MOVIE</div>
         <h1>Crear cuenta</h1>
-        <p className="subtitle">Regístrate y comienza tu experiencia</p>
+        <p className="subtitle">
+          Regístrate y comienza tu experiencia
+        </p>
 
-        <RegisterForm 
-          onRegistro={manejarRegistro} 
-          errorGlobal={error} 
+        <RegisterForm
+          onRegistro={manejarRegistro}
+          errorGlobal={error}
           exito={exito}
           irAlLogin={() => navigate("/login")}
         />
 
         <p className="auth-link">
-          ¿Ya tienes una cuenta? <Link to="/login">Iniciar sesión</Link>
+          ¿Ya tienes una cuenta?{" "}
+          <Link to="/login">Iniciar sesión</Link>
         </p>
       </section>
     </main>

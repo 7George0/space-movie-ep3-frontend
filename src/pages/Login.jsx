@@ -1,31 +1,39 @@
+
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { validarLogin } from "../utils/validaciones";
 import { LoginForm } from "../components/organisms/LoginForm";
+import { useAuth } from "../context/AuthContext";
 import "../styles/auth.css";
 
 function Login() {
   const navigate = useNavigate();
-  const [error, setError] = useState("");
+  const { login } = useAuth();
 
-  const manejarLogin = ({ correo, password }) => {
+  const [error, setError] = useState("");
+  const [cargando, setCargando] = useState(false);
+
+  const manejarLogin = async ({ correo, password }) => {
     setError("");
+
     const resultado = validarLogin(correo, password);
+
     if (resultado) {
       setError(resultado);
       return;
     }
 
-    const usuarios = JSON.parse(localStorage.getItem("spaceMovieUsuarios") || "[]");
-    const usuario = usuarios.find((u) => u.correo === correo.trim().toLowerCase());
+    try {
+      setCargando(true);
 
-    if (!usuario) {
-      setError("No existe una cuenta registrada con ese correo.");
-      return;
+      await login(correo.trim().toLowerCase(), password);
+
+      navigate("/");
+    } catch (err) {
+      setError(err.message || "No se pudo iniciar sesión.");
+    } finally {
+      setCargando(false);
     }
-
-    sessionStorage.setItem("spaceMovieDemo", JSON.stringify(usuario));
-    navigate("/");
   };
 
   return (
@@ -35,10 +43,15 @@ function Login() {
         <h1>Iniciar sesión</h1>
         <p className="subtitle">Bienvenido</p>
 
-        <LoginForm onLogin={manejarLogin} errorGlobal={error} />
+        <LoginForm
+          onLogin={manejarLogin}
+          errorGlobal={error}
+          cargando={cargando}
+        />
 
         <p className="auth-link">
-          ¿No tienes una cuenta? <Link to="/registro">Regístrate aquí</Link>
+          ¿No tienes una cuenta?{" "}
+          <Link to="/registro">Regístrate aquí</Link>
         </p>
       </section>
     </main>
