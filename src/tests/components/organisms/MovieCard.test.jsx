@@ -27,13 +27,18 @@ describe('MovieCard', () => {
     expect(screen.getByRole('link')).toHaveAttribute('href', '/sinopsis/7')
   })
 
-  it('muestra puntaje, año, duración y descripción', () => {
+  
+  it('muestra puntaje, año y duración sin descripción breve', () => {
     renderConRouter(<MovieCard {...pelicula} />)
 
     const rating = screen.getByRole('heading', { level: 3 })
+
     expect(rating).toHaveTextContent('82/100')
     expect(rating).toHaveTextContent('2025')
     expect(rating).toHaveTextContent('92 min')
-    expect(screen.getByText('El Coyote demanda a ACME')).toBeInTheDocument()
+
+    expect(
+      screen.queryByText('El Coyote demanda a ACME')
+    ).not.toBeInTheDocument()
   })
 })

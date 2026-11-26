@@ -26,9 +26,12 @@ describe('MovieInfo', () => {
     expect(rating).toHaveTextContent('92 min')
   })
 
-  it('muestra la descripción de la película', () => {
+  it('no muestra la descripción breve de la película', () => {
     render(<MovieInfo {...propsBase} />)
 
-    expect(screen.getByText('El Coyote demanda a ACME')).toHaveClass('short-desc')
+    expect(
+      screen.queryByText('El Coyote demanda a ACME')
+    ).not.toBeInTheDocument()
   })
 })
+
