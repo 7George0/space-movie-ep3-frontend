@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useAuth } from "../context/AuthContext";
 
 import {
@@ -102,7 +102,7 @@ function AdminPage() {
   const [error, setError] = useState("");
   const [mensaje, setMensaje] = useState("");
 
-  async function cargarDatos() {
+  const cargarDatos = useCallback(async () => {
     setCargando(true);
     setError("");
 
@@ -122,10 +122,9 @@ function AdminPage() {
     } finally {
       setCargando(false);
     }
-  }
+  }, []);
 
-  // Cargar usuarios y tipos de usuario desde el backend
-  async function cargarUsuarios() {
+  const cargarUsuarios = useCallback(async () => {
     try {
       setCargandoUsuarios(true);
       setErrorUsuarios("");
@@ -144,16 +143,14 @@ function AdminPage() {
     } finally {
       setCargandoUsuarios(false);
     }
-  }
+  }, [token]);
 
-    // Cargar reseñas desde el backend
-  async function cargarResenas() {
+  const cargarResenas = useCallback(async () => {
     try {
       setCargandoResenas(true);
       setErrorResenas("");
 
       const listaResenas = await listarResenasAdmin();
-
       setResenas(listaResenas || []);
     } catch (error) {
       setErrorResenas(
@@ -162,21 +159,21 @@ function AdminPage() {
     } finally {
       setCargandoResenas(false);
     }
-  }
+  }, []);
 
   useEffect(() => {
-    cargarDatos();
-  }, []);
+    void Promise.resolve().then(cargarDatos);
+  }, [cargarDatos]);
 
   useEffect(() => {
     if (token) {
-      cargarUsuarios();
+      void Promise.resolve().then(cargarUsuarios);
     }
-  }, [token]);
+  }, [token, cargarUsuarios]);
 
   useEffect(() => {
-    cargarResenas();
-  }, []);
+    void Promise.resolve().then(cargarResenas);
+  }, [cargarResenas]);
 
   function cambiarCampo(evento) {
     const { name, value } = evento.target;

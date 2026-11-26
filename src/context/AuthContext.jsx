@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components -- AuthProvider y useAuth se mantienen juntos para conservar la integración existente. */
 import { createContext, useContext, useState } from "react";
 
 const AuthContext = createContext(null);

@@ -5,7 +5,7 @@ async function solicitar(url, opciones = {}) {
   const respuesta = await fetch(url, opciones);
   const texto = await respuesta.text();
 
-  let datos = null;
+  let datos;
 
   try {
     datos = texto ? JSON.parse(texto) : null;
